@@ -1,0 +1,265 @@
+:root {
+  --color-bg: #ffffff;
+  --color-text: #222222;
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-muted: #666666;
+  --color-border: #e5e5e5;
+  --max-width: 800px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  list-style: none;
+}
+
+/* header */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+header nav ul {
+  display: flex;
+  gap: 20px;
+}
+
+/* menu toggle button: hidden by default, shown only on narrow screens below */
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 26px;
+  height: 18px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2px;
+  background-color: var(--color-text);
+  border-radius: 2px;
+}
+
+/* main content */
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+section {
+  margin-bottom: 56px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+#about p {
+  color: var(--color-muted);
+}
+
+#services ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* buttons */
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-top: 12px;
+  margin-right: 12px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+/* footer */
+
+footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* works page: notice, cards, badges */
+
+.notice {
+  background-color: #fef9e7;
+  border: 1px solid #f5e6a8;
+  border-radius: 6px;
+  padding: 14px 16px;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.card h3 {
+  margin: 10px 0 8px;
+  font-size: 1.1rem;
+}
+
+.card p {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.card-meta {
+  margin-top: 10px;
+  font-size: 0.85rem !important;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.badge-sample {
+  background-color: #eef2ff;
+  color: #4338ca;
+}
+
+.badge-learning {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+/* contact form */
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+button.button {
+  border: none;
+  cursor: pointer;
+}
+
+/* responsive: narrow screens (mainly smartphones) */
+
+@media (max-width: 600px) {
+  header {
+    align-items: center;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  header nav {
+    width: 100%;
+    order: 3;
+  }
+
+  header nav ul {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 16px;
+  }
+
+  header nav.nav-open ul {
+    display: flex;
+  }
+
+  main {
+    padding: 32px 20px;
+  }
+
+  .button {
+    display: block;
+    text-align: center;
+    margin-right: 0;
+  }
+}
