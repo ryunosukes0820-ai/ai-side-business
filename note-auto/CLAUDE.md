@@ -19,18 +19,66 @@
 5. **価格設定**
    今後作成する記事は、原則100円で販売する。writing工程で本文を書く際は、記事のどこまでを無料部分にし、どこから有料部分にするかの境界もあわせて設計する。
 
+6. **サムネイル準備の必須化**
+   すべての記事で、`prompts/publish-prep.md` に沿ったサムネイル設計案(メインテキスト・デザイン案・画像生成AI用プロンプトは必須、サブテキストは省略可)を作成する。未作成の場合、その記事は公開準備完了として扱わない。
+
+7. **git操作の安全ルール**
+   `git add .` は使用しない。対象ファイルを常に明示的に指定する。既存の記事ファイル・`topics.csv` の既存行は、削除・上書きせず追記・特定フィールドの更新のみを行う。`scripts/manage_topics.py` に行削除機能は実装しない。
+
 ## ワークフロー
 
 ```
 topics.csv (ネタ選定)
-  → prompts/research.md  (検索意図・事実の整理)
-  → prompts/outline.md   (見出し構成の作成)
-  → prompts/writing.md   (本文執筆)
-  → prompts/review.md    (重複整理・ファクトチェック・最終校正)
+  → prompts/research.md      (検索意図・事実の整理)
+  → prompts/outline.md       (見出し構成・無料/有料判定・価格案・有料ライン候補)
+  → prompts/writing.md       (本文執筆)
+  → prompts/review.md        (重複整理・ファクトチェック・最終校正)
+  → prompts/publish-prep.md  (note投稿用メタ情報・サムネイル設計案 ※必須)
   → articles/draft/ に保存
   → (人が確認・note.comへ手動投稿)
   → articles/published/ へ移動 + topics.csv のステータス更新
 ```
+
+## トリガーコマンド(一括自動化)
+
+以下の2つのトリガーが入力されたときは、都度の確認を省略し、決められた範囲まで自動的に進める。
+
+### 「次の記事を作成」
+
+以下を順番に、個別の確認を挟まずに実行する。
+
+1. `articles/draft/` を確認する。**既にファイルが存在する場合は、そこで止めて内容をユーザーに報告する**(前回途中で止まっている記事がある可能性があるため、無断で2本目を作らない)
+2. `topics.csv` と `articles/published/` を確認し、既存記事と重複しないテーマ・SEOキーワードを選ぶ
+3. `prompts/research.md` に沿って検索意図・想定読者・事実を整理する(Web検索が必要な場合、「次の記事を作成」という指示自体を事前許可とみなし、都度確認せず進める)
+4. `prompts/outline.md` に沿ってSEOタイトル・見出し構成・無料/有料判定・価格案・有料ライン候補を作成する
+5. `prompts/writing.md` に沿って本文初稿を書く
+6. `prompts/review.md` に沿って重複・冗長表現・AIっぽい表現を編集し、ファクトチェック要確認リストを作成する
+7. `prompts/publish-prep.md` に沿って、note投稿用メタ情報とサムネイル設計案(メインテキスト/サブテキスト/デザイン案/画像生成AI用プロンプト)を**必ず**作成する。この4項目(サブテキストは省略可)が揃わない場合、公開準備完了として扱わない
+8. 完成した記事(本文+publish-prepの内容)を `articles/draft/` に保存する
+
+**ここで必ず停止する。** 以下は絶対に行わない。
+
+- note.comへの投稿
+- `articles/published/` への移動
+- `topics.csv` の `status` を `published` にする更新
+- `git add` / `git commit` / `git push`
+
+保存後、選んだテーマ・SEOタイトル・見出し構成・無料/有料判定と価格・有料ラインの位置・ファクトチェック要確認リスト・ハッシュタグ案・サムネイル設計案をまとめて1回報告し、ユーザーの確認を待つ。
+
+### 「公開完了」+ 公開URL
+
+以下を順番に実行する。
+
+1. 受け取った公開URLを確認する
+2. `articles/draft/` を確認する。**ファイルが複数ある場合は、対象を自動判定せずユーザーに確認する**
+3. 対象記事を `articles/draft/` から `articles/published/` へ移動する
+4. `topics.csv` に該当行がなければ `scripts/manage_topics.py add-topic` で新規追加してから、あれば直接、`scripts/manage_topics.py mark-published <id> "<url>"` で `status=published` と `note_url` を記録する
+5. `git status` で今回関係するファイルのみを確認する
+6. 関係ファイルだけを明示的に指定して `git add`(`git add .` は使用しない)
+7. `git commit`(コミットメッセージは記事内容が分かるものにする)
+8. `git push origin main`
+9. `git status` で `working tree clean` を確認する
+10. 変更したファイル・`topics.csv` の更新内容・commit/pushの結果をまとめて報告する
 
 ## ファイル構成
 

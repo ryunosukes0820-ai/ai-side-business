@@ -8,6 +8,8 @@ Usage:
     python3 scripts/manage_topics.py list
     python3 scripts/manage_topics.py set-status <id> <status>
     python3 scripts/manage_topics.py new-draft <id>
+    python3 scripts/manage_topics.py add-topic "<title>" "<keyword>" "<category>" ["<status>"]
+    python3 scripts/manage_topics.py mark-published <id> "<url>"
 """
 
 import csv
@@ -52,6 +54,36 @@ def cmd_set_status(topic_id, new_status):
     target["status"] = new_status
     write_topics(rows)
     print(f"[{topic_id}] status -> {new_status}")
+
+
+def cmd_add_topic(title, keyword, category, status="未着手"):
+    rows = read_topics()
+    existing_ids = [int(r["id"]) for r in rows if r["id"].isdigit()]
+    next_id = str(max(existing_ids, default=0) + 1)
+    rows.append({
+        "id": next_id,
+        "title": title,
+        "keyword": keyword,
+        "category": category,
+        "status": status,
+        "note_url": "",
+        "memo": "",
+    })
+    write_topics(rows)
+    print(f"追加しました: id={next_id} {title}")
+    return next_id
+
+
+def cmd_mark_published(topic_id, url):
+    rows = read_topics()
+    target = next((r for r in rows if r["id"] == topic_id), None)
+    if target is None:
+        print(f"id={topic_id} が見つかりません。")
+        sys.exit(1)
+    target["status"] = "published"
+    target["note_url"] = url
+    write_topics(rows)
+    print(f"[{topic_id}] status -> published, note_url -> {url}")
 
 
 def slugify(text):
@@ -115,6 +147,17 @@ def main():
             print("Usage: manage_topics.py new-draft <id>")
             sys.exit(1)
         cmd_new_draft(sys.argv[2])
+    elif command == "add-topic":
+        if len(sys.argv) not in (5, 6):
+            print('Usage: manage_topics.py add-topic "<title>" "<keyword>" "<category>" ["<status>"]')
+            sys.exit(1)
+        status = sys.argv[5] if len(sys.argv) == 6 else "未着手"
+        cmd_add_topic(sys.argv[2], sys.argv[3], sys.argv[4], status)
+    elif command == "mark-published":
+        if len(sys.argv) != 4:
+            print('Usage: manage_topics.py mark-published <id> "<url>"')
+            sys.exit(1)
+        cmd_mark_published(sys.argv[2], sys.argv[3])
     else:
         print(f"不明なコマンドです: {command}")
         print(__doc__)
