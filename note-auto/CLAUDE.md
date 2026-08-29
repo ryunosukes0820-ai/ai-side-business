@@ -31,6 +31,9 @@
 9. **本文の文字数ルール(第8記事以降に適用)**
    記事本文は原則2,800〜3,200文字にする。対象は「公開する記事本文」(タイトル〜まとめ)のみで、front matter、note投稿メタ情報、ハッシュタグ案、サムネイル設計案、参考情報のURL一覧は文字数に含めない。文字数を増やすための重複・冗長表現・水増しは禁止する。2,800文字未満の場合は、具体例・手順・注意点・FAQなど検索意図に合う実用情報を補強し、3,200文字を超えた場合は重複・冗長表現を削って圧縮する。最終文字数は`review.md`の工程で確認し、`publish-prep.md`の最終報告に必ず記載する。**この文字数ルールは第8記事から適用する。第1〜7記事は対象外とし、変更しない。**
 
+10. **SNS宣伝準備の自動化ルール(第9記事以降に適用)**
+    X・ThreadsへのSNS投稿は、`prompts/social-promotion.md` に沿ってテキストを作成するところまでで、**実際の投稿・予約投稿・API接続は一切行わない**(投稿はユーザー本人が手動で行う)。X APIキー・Threads APIキー・アクセストークンなどの認証情報の取得・保存は行わない。SNSアカウントへのログインも行わない。生成する投稿文は記事本文に実際に書かれている内容だけを使い、記事にない実績・数字・経験・成果を新しく作らない。「必ず稼げる」「絶対に成功する」「誰でも稼げる」「100%成果が出る」、虚偽の実績、過度な煽りは禁止表現とする。金融・健康・美容などYMYL領域の記事では、特に断定表現を避ける。XとThreadsで同じ文章を使い回さない。`social/promotions.csv` の行は `scripts/manage_promotions.py` で管理し、削除コマンドは実装しない。手順の詳細は「トリガーコマンド」内の該当箇所と `prompts/social-promotion.md` を参照する。
+
 ## ワークフロー
 
 ```
@@ -47,7 +50,7 @@ topics.csv (ネタ選定)
 
 ## トリガーコマンド(一括自動化)
 
-以下の2つのトリガーが入力されたときは、都度の確認を省略し、決められた範囲まで自動的に進める。
+以下のトリガーが入力されたときは、都度の確認を省略し、決められた範囲まで自動的に進める。
 
 ### 「次の記事を作成」
 
@@ -77,18 +80,72 @@ topics.csv (ネタ選定)
 
 ### 「公開完了」+ 公開URL
 
-以下を順番に実行する。
+以下を順番に実行する(第9記事以降はSNS宣伝パッケージ作成を含む。第8記事以前はSNS部分を省略する)。
 
 1. 受け取った公開URLを確認する
 2. `articles/draft/` を確認する。**ファイルが複数ある場合は、対象を自動判定せずユーザーに確認する**
 3. 対象記事を `articles/draft/` から `articles/published/` へ移動する
-4. `topics.csv` に該当行がなければ `scripts/manage_topics.py add-topic` で新規追加してから、あれば直接、`scripts/manage_topics.py mark-published <id> "<url>"` で `status=published` と `note_url` を記録する
-5. `git status` で今回関係するファイルのみを確認する
-6. 関係ファイルだけを明示的に指定して `git add`(`git add .` は使用しない)
-7. `git commit`(コミットメッセージは記事内容が分かるものにする)
-8. `git push origin main`
-9. `git status` で `working tree clean` を確認する
-10. 変更したファイル・`topics.csv` の更新内容・commit/pushの結果をまとめて報告する
+4. `topics.csv` に該当行がなければ `scripts/manage_topics.py add-topic` で新規追加してから、あれば直接、`scripts/manage_topics.py mark-published <id> "<url>"` で `status=published` と `note_url` を記録する(この1コマンドで両方を記録する)
+5. 移動した`articles/published/`の記事本文を読み込む
+6. `prompts/social-promotion.md` に沿って、X5パターン・Threads5パターンのSNS投稿文を生成する
+7. `social/article-XX-promotions.md`(XXは記事idを2桁ゼロ埋め)へ保存する
+8. `scripts/manage_promotions.py add` を10回実行し、X5件・Threads5件を `social/promotions.csv` に登録する(重複防止・削除なし)
+9. 生成したSNS投稿文が、`prompts/social-promotion.md` の必須チェック(文字数目安・禁止表現・記事にない実績を作っていないか・XとThreadsの使い回しがないか等)を満たしているか確認する
+10. `git status` で今回関係するファイルのみを確認する
+11. 関係ファイルだけを明示的に指定して `git add`(`git add .` は使用しない。例: `topics.csv`、移動したpublished記事、`social/article-XX-promotions.md`、`social/promotions.csv`)
+12. `git commit`(コミットメッセージは記事内容が分かるものにする)
+13. `git push origin main`
+14. `git status` で `working tree clean` を確認する
+
+最後に、変更したファイル・`topics.csv`の更新内容・commit/pushの結果に加えて、SNS投稿文を次の形式でそのままコピーできる状態で表示する(記事URLも投稿文に適切に含める)。
+
+```
+【X｜今すぐ投稿】
+(公開直後用の完成投稿文)
+
+【Threads｜今すぐ投稿】
+(公開直後用の完成投稿文)
+
+【翌日候補】
+X: (ノウハウ型または共感型の完成投稿文)
+Threads: (該当パターンの完成投稿文)
+
+【3日後候補】
+X: (該当パターンの完成投稿文)
+Threads: (該当パターンの完成投稿文)
+
+【7日後候補】
+X: (再告知型の完成投稿文)
+Threads: (再告知型の完成投稿文)
+```
+
+第8記事以前(SNS宣伝パッケージなし)は、従来通り手順1〜5相当(URL確認・draft移動・topics.csv更新・git操作・報告)のみを行う。
+
+### 「SNS宣伝を作成」+ 記事id
+
+既に公開済みの記事に対して、後からSNS宣伝パッケージを作成する場合に使う(例: 第9記事以降の仕組み導入前に公開した記事に、後付けで使う)。
+
+1. `topics.csv` から該当 `article_id` の行を確認し、タイトル・`note_url` を取得する(該当行がない、または `note_url` が空の場合は、その旨を報告して停止する)
+2. `articles/published/` から該当記事の本文ファイルを読み込む
+3. `prompts/social-promotion.md` に沿って、X5パターン・Threads5パターンのSNS投稿文を生成する
+4. `social/article-XX-promotions.md` へ保存する(既に存在する場合は内容を確認し、安全に更新する)
+5. `scripts/manage_promotions.py add` で `social/promotions.csv` に登録する(重複防止・削除なし)
+6. SNSへの実投稿は行わない
+7. 生成したSNS投稿文を、上記「公開完了」と同じ形式でまとめて表示する
+
+**このトリガーでは、git操作(add/commit/push)は自動的に行わない。** ファイルの作成・更新と表示までを行い、git操作が必要な場合は別途指示を受けてから行う。
+
+### 「X投稿完了」「Threads投稿完了」
+
+ユーザーが実際にSNSへ投稿した後に伝えるトリガー。
+
+1. どの記事(article_id)の投稿かを、直前の文脈から特定する(不明な場合はユーザーに確認する)
+2. `scripts/manage_promotions.py list-ready <article_id>` で、該当記事・該当プラットフォームの`ready`な投稿を確認する
+3. 該当プラットフォームで`ready`な投稿(post_type)が**複数ある場合、どれを投稿したかを自動で推測せず、必ずユーザーに確認する**
+4. post_typeが確定したら `scripts/manage_promotions.py mark-posted <article_id> <platform> <post_type>` で `status=posted` に更新する
+5. 更新結果を報告する
+
+**git操作は自動的に行わない。**
 
 ## ファイル構成
 
@@ -96,7 +153,8 @@ topics.csv (ネタ選定)
 - `prompts/`: 各工程で使うプロンプトテンプレート
 - `articles/draft/`: 投稿前の下書き(Markdown)
 - `articles/published/`: 投稿済みの記事(Markdown、控えとして保管)
-- `scripts/`: 補助スクリプト(内容は別途相談・決定)
+- `scripts/`: 補助スクリプト。`manage_topics.py`(topics.csv管理)、`manage_promotions.py`(social/promotions.csv管理)
+- `social/`: SNS宣伝パッケージ。`article-XX-promotions.md`(記事ごとのX・Threads投稿文)、`promotions.csv`(投稿管理台帳)
 - `data/`: 投稿履歴などの記録
 - `logs/`: エラーなどの記録
 
