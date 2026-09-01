@@ -34,6 +34,23 @@
 10. **SNS宣伝準備の自動化ルール(第9記事以降に適用)**
     X・ThreadsへのSNS投稿は、`prompts/social-promotion.md` に沿ってテキストを作成するところまでで、**実際の投稿・予約投稿・API接続は一切行わない**(投稿はユーザー本人が手動で行う)。X APIキー・Threads APIキー・アクセストークンなどの認証情報の取得・保存は行わない。SNSアカウントへのログインも行わない。生成する投稿文は記事本文に実際に書かれている内容だけを使い、記事にない実績・数字・経験・成果を新しく作らない。「必ず稼げる」「絶対に成功する」「誰でも稼げる」「100%成果が出る」、虚偽の実績、過度な煽りは禁止表現とする。金融・健康・美容などYMYL領域の記事では、特に断定表現を避ける。XとThreadsで同じ文章を使い回さない。`social/promotions.csv` の行は `scripts/manage_promotions.py` で管理し、削除コマンドは実装しない。手順の詳細は「トリガーコマンド」内の該当箇所と `prompts/social-promotion.md` を参照する。
 
+11. **承認回数を減らすための運用ルール**
+    安全性(捏造禁止・削除禁止・`git add .`禁止・force push禁止・テーマ自動決定禁止など、本セクションの他の項目)を維持したまま、ユーザーの承認(Yes/No)回数を減らすことを常に意識する。
+    - **Edit**: 同一ファイルへの修正は原則1回にまとめる。ファクトチェックで複数箇所の問題が見つかった場合は、すべて洗い出してから1回のEditで反映する。「1箇所修正→再確認→1箇所修正」を繰り返さない。本文修正とメタ情報(文字数など)の更新は、可能な限り同時に行う
+    - **WebSearch/WebFetch**: 1つの論点につき信頼できる一次情報1〜2件で確認できたら、それ以上の検索・取得を行わない。同じ意味の言い換え検索を繰り返さない。ファクトチェックで複数の論点を確認する場合は、論点を先にすべて洗い出してから検索を行う
+    - **読み取り確認**: 文字数・内部コメント・有料ライン・thumbnail・topics.csv・promotions.csv・git statusなどの確認は、個別のコマンドに分割せず `scripts/verify_article_workflow.py <article_id>` にまとめる(詳細は下記スクリプト一覧)
+    - **公開完了時のローカル処理**とSNS投稿完了時の記録更新は、それぞれ `scripts/complete_publish.py` / `scripts/complete_social_post.py` に一括化されている(詳細は「トリガーコマンド」内の該当箇所)
+    - これらのスクリプトは読み取り専用の検証、または明示的に許可されたファイルのみを対象とする安全なgit操作に限定されており、`git add .`・force push・削除・巻き戻し系のgit操作は一切実装されていない(コード上のガードであり、判断で回避できない)
+
+## 補助スクリプト一覧
+
+- `scripts/manage_topics.py`: `topics.csv` の基本操作(list/set-status/new-draft/add-topic/mark-published)。削除コマンドはない
+- `scripts/manage_promotions.py`: `social/promotions.csv` の基本操作(init/add/list-ready/mark-posted)。削除コマンドはない
+- `scripts/verify_article_workflow.py <article_id>`: 読み取り専用。本文文字数・2,800〜3,200字判定・内部コメント混入・有料ラインの位置・thumbnailファイルの存在と必須項目・topics.csvの該当行とnote_url形式・promotions.csvの該当行(件数・X/Threads内訳・status・URL形式)・git status・想定外ファイルの有無を1回の実行でまとめて確認し、PASS/WARN/FAILで表示する。ファイルは一切書き換えない
+- `scripts/git_safe_sync.py --files <path...> --message "<msg>"`: 指定したファイルだけを対象に、git status確認→許可ファイルとの完全一致検証→`git add`→staged再検証→`git commit`→`git push origin main`→最終`git status`まで行う。`git add .`はコード上実装されていない。push先は`origin main`に固定(それ以外は拒否)。想定外の変更ファイル・削除ファイル・staged不一致がある場合は、addやcommitを行わずに中断する。commitが失敗した場合はpushしない
+- `scripts/complete_publish.py <article_id> <note_url>`: 「公開完了」トリガーのローカル処理(topics.csv更新・draft→published移動・SNS宣伝ファイルの存在確認・promotions.csvへの10件登録・`verify_article_workflow.py`による検証・`git_safe_sync.py`呼び出し)を1回にまとめる。**実行前に、Claude CodeがSNS投稿文を作成し`social/article-XX-promotions.md`を保存しておく必要がある**(投稿文の生成そのものはこのスクリプトの役割ではない)。draft候補が複数/0件、URL形式不正、article_idの不一致、SNS宣伝ファイル未作成、SNS件数不足、想定外ファイルがある場合は、その時点で中断し、それまでに完了した内容だけを報告する(自動ロールバックはしない)
+- `scripts/complete_social_post.py <article_id> <platform> <post_type>`: 「X投稿完了」「Threads投稿完了」トリガーの記録更新(対象行確認・mark-posted・posted_at確認・他行の不変確認・`social/promotions.csv`のみの`git_safe_sync.py`呼び出し)を1回にまとめる。対象が一意に特定できない場合・見つからない場合・既にposted済みの場合は推測せず中断する
+
 ## カテゴリ一覧(バランス確認用・10カテゴリ)
 
 「次の記事を作成」(第9記事スタート/次の記事スタート)のテーマ提案時に、カテゴリの偏りを確認するための判断材料。**均等配分が目的ではなく、同じカテゴリへの過度な偏りを避けるための参考情報として使う。** 第1〜8記事の`topics.csv`の`category`列は遡って変更しない。第9記事以降の新しいテーマは、原則この中から選ぶ。
@@ -82,7 +99,7 @@ topics.csv (ネタ選定)
 
 #### STEP2: テーマ承認後の自動実行
 
-ユーザーが候補の中からテーマを選んだら、そのテーマとメインキーワードをこのワークフロー中の固定値とする(テーマ・メインキーワードのロック。ロックの解除・変更は必ずユーザー承認を得てから行う)。以降は、個別の確認を挟まずに以下を連続して実行する。
+ユーザーが候補の中からテーマを選んだら、そのテーマとメインキーワードをこのワークフロー中の固定値とする(テーマ・メインキーワードのロック。ロックの解除・変更は必ずユーザー承認を得てから行う)。以降は、個別の確認を挟まずに以下を連続して実行する。承認回数を減らすため、「絶対に守ること」11番の運用ルール(Edit・WebSearch/WebFetch・読み取り確認のまとめ方)に従うこと。
 
 1. `prompts/research.md` に沿って検索意図・想定読者・事実を整理する(Web検索が必要な場合、「次の記事を作成」という指示自体を事前許可とみなし、都度確認せず進める)。一次情報が不足している場合は、テーマ・メインキーワードを変更せず維持したまま、以下の順番で対応する。
    1. 検索語を変え、公式サイト・別の一次情報を探すなど、同じテーマ・キーワードのまま再researchする
@@ -114,24 +131,17 @@ topics.csv (ネタ選定)
 
 ### 「公開完了」+ 公開URL
 
-以下を順番に実行する(第9記事以降はSNS宣伝パッケージ作成を含む。第8記事以前はSNS部分を省略する)。
+**第9記事以降**は、Claude Codeが先にSNS投稿文を作成し、その後 `scripts/complete_publish.py` にローカル処理をまとめて実行させる、という2段階で進める。
 
 1. 受け取った公開URLを確認する
-2. `articles/draft/` を確認する。**ファイルが複数ある場合は、対象を自動判定せずユーザーに確認する**
-3. 対象記事を `articles/draft/` から `articles/published/` へ移動する
-4. `topics.csv` に該当行がなければ `scripts/manage_topics.py add-topic` で新規追加してから、あれば直接、`scripts/manage_topics.py mark-published <id> "<url>"` で `status=published` と `note_url` を記録する(この1コマンドで両方を記録する)
-5. 移動した`articles/published/`の記事本文を読み込む
-6. `prompts/social-promotion.md` に沿って、X5パターン・Threads5パターンのSNS投稿文を生成する
-7. `social/article-XX-promotions.md`(XXは記事idを2桁ゼロ埋め)へ保存する
-8. `scripts/manage_promotions.py add` を10回実行し、X5件・Threads5件を `social/promotions.csv` に登録する(重複防止・削除なし)
-9. 生成したSNS投稿文が、`prompts/social-promotion.md` の必須チェック(文字数目安・禁止表現・記事にない実績を作っていないか・XとThreadsの使い回しがないか等)を満たしているか確認する
-10. `git status` で今回関係するファイルのみを確認する。**このワークフローで想定していない変更ファイルが含まれている場合は、`git add` する前に停止し、その旨をユーザーに報告する**
-11. 関係ファイルだけを明示的に指定して `git add`(`git add .` は使用しない。例: `topics.csv`、移動したpublished記事、今回新規作成された`thumbnails/article-XX-thumbnail.md`、`social/article-XX-promotions.md`、`social/promotions.csv`)
-12. `git commit`(コミットメッセージは記事内容が分かるものにする)
-13. `git push origin main`
-14. `git status` で `working tree clean` を確認する
+2. `articles/draft/` を確認する。**ファイルが複数ある場合は、対象を自動判定せずユーザーに確認する**(この場合はスクリプトを実行しない。`complete_publish.py`自体もdraft候補が1件でなければ中断する)
+3. 移動前の`articles/draft/`の記事本文を読み込み、`prompts/social-promotion.md` に沿ってX5パターン・Threads5パターンのSNS投稿文を生成し、`social/article-XX-promotions.md`(XXは記事idを2桁ゼロ埋め。次の記事idは`topics.csv`の最大id+1)へ保存する。生成した投稿文が`prompts/social-promotion.md`の必須チェック(文字数目安・禁止表現・記事にない実績を作っていないか・XとThreadsの使い回しがないか等)を満たしているか確認する
+4. `python3 scripts/complete_publish.py <article_id> <note_url>` を実行する。これ1回で、topics.csvへの登録・`status=published`と`note_url`の記録・draftからpublishedへの移動・`social/article-XX-promotions.md`の内容をpromotions.csvへ10件登録・`verify_article_workflow.py`による検証・問題なければ`git_safe_sync.py`によるadd→commit→push→最終status確認まで行われる
+5. スクリプトが `[ABORT]` で終了した場合は、そこまでに完了した内容(topics.csv更新やdraft移動が済んでいる場合はその旨)をそのまま報告し、原因を解消してから再実行するかユーザーに確認する(自動でロールバックや再試行はしない)
 
-最後に、変更したファイル・`topics.csv`の更新内容・commit/pushの結果に加えて、SNS投稿文を次の形式でそのままコピーできる状態で表示する(記事URLも投稿文に適切に含める)。
+**第8記事以前**(SNS宣伝パッケージなし)は、従来通り手順1〜2相当(URL確認・draft移動・topics.csv更新)を個別に行い、SNS関連・`complete_publish.py`は使用しない。
+
+最後に、`complete_publish.py`の出力(検証結果・commit/pushの結果)に加えて、SNS投稿文を次の形式でそのままコピーできる状態で表示する(記事URLも投稿文に適切に含める)。
 
 ```
 【X｜今すぐ投稿】
@@ -174,16 +184,12 @@ Threads: (再告知型の完成投稿文)
 ユーザーが実際にSNSへ投稿した後に伝えるトリガー。
 
 1. どの記事(article_id)の投稿かを、直前の文脈から特定する(不明な場合はユーザーに確認する)
-2. `scripts/manage_promotions.py list-ready <article_id>` で、該当記事・該当プラットフォームの`ready`な投稿を確認する
-3. platformとpost_typeを一意に特定できる場合だけ次に進む。**該当プラットフォームで`ready`な投稿(post_type)が複数あるなど曖昧な場合は、推測せず必ずユーザーに確認して停止する**
-4. post_typeが確定したら `scripts/manage_promotions.py mark-posted <article_id> <platform> <post_type>` で `status=posted` に更新する
-5. 更新後、該当行が`status=posted`かつ`posted_at`に日時が入っていること、他の行の`status`が変化していないことを確認する
-6. 問題がなければ、`social/promotions.csv` だけを明示的に指定して `git add` する(`git add .` は使用しない。`social/promotions.csv` 以外の変更が混ざっている場合はaddせず停止して報告する)
-7. コミットメッセージは投稿内容が分かるものにして `git commit`、続けて `git push origin main` を行う
-8. `git status` で `working tree clean` を確認する
-9. 更新結果とcommit/pushの結果を報告する
+2. platformとpost_typeを一意に特定できる場合だけ次に進む。**曖昧な場合(該当プラットフォームで`ready`な投稿が複数ある等)は、`scripts/manage_promotions.py list-ready <article_id>` で候補を確認したうえで、推測せず必ずユーザーに確認して停止する**(`complete_social_post.py`は実行しない)
+3. article_id・platform・post_typeが確定したら `python3 scripts/complete_social_post.py <article_id> <platform> <post_type>` を実行する。これ1回で、対象行の`status=ready`確認・`mark-posted`実行・`status=posted`と`posted_at`の確認・他の行が変化していないことの確認・`social/promotions.csv`だけを対象にした`git_safe_sync.py`によるadd→commit→push→最終status確認まで行われる
+4. スクリプトが `[ABORT]` で終了した場合(該当行なし・既にposted済み・他行に想定外の変化・git保存の失敗など)は、原因をそのまま報告し、推測で処理を進めない
+5. 実行結果を報告する
 
-**`social/promotions.csv` 以外のファイルは、このトリガーの中でgit addしない。**
+**`social/promotions.csv` 以外のファイルは、このトリガーの中でgit addしない(`complete_social_post.py`もこのファイルのみを対象にする)。**
 
 ## ファイル構成
 
@@ -191,7 +197,7 @@ Threads: (再告知型の完成投稿文)
 - `prompts/`: 各工程で使うプロンプトテンプレート
 - `articles/draft/`: 投稿前の下書き(Markdown)
 - `articles/published/`: 投稿済みの記事(Markdown、控えとして保管)
-- `scripts/`: 補助スクリプト。`manage_topics.py`(topics.csv管理)、`manage_promotions.py`(social/promotions.csv管理)
+- `scripts/`: 補助スクリプト。`manage_topics.py`(topics.csv管理)、`manage_promotions.py`(social/promotions.csv管理)、`verify_article_workflow.py`(読み取り専用の統合確認)、`git_safe_sync.py`(安全な一括git保存)、`complete_publish.py`(公開完了ローカル処理の一括実行)、`complete_social_post.py`(SNS投稿完了処理の一括実行)。詳細は「絶対に守ること」11番・「補助スクリプト一覧」を参照
 - `social/`: SNS宣伝パッケージ。`article-XX-promotions.md`(記事ごとのX・Threads投稿文)、`promotions.csv`(投稿管理台帳)
 - `thumbnails/`: 第9記事以降のサムネイル設計案。`article-XX-thumbnail.md`(記事ごとに、メインコピー・サブコピー・おすすめ構図・文字配置・背景イメージ・アイコン/モチーフ・画像生成AI用プロンプトの7項目。画像そのものは外部APIで自動生成しない)
 - `data/`: 投稿履歴などの記録

@@ -2,6 +2,8 @@
 
 **目的**: 公開済みのnote記事(published記事本文)をもとに、X(旧Twitter)・Threads向けの宣伝投稿文を作成する。
 
+**承認回数の削減について**: `social/article-XX-promotions.md`はWriteで1回にまとめて作成する。promotions.csvへの登録・git保存は個別コマンドではなく`scripts/complete_publish.py`にまとめる(詳細はCLAUDE.mdの「絶対に守ること」11番)。
+
 **この工程は「公開完了」処理の標準工程、および「SNS宣伝を作成 &lt;article_id&gt;」トリガーの両方で使用する。**
 
 ## 絶対に守ること
