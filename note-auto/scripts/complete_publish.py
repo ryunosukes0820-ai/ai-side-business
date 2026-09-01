@@ -4,18 +4,30 @@
 前提: SNS投稿文(social/article-XX-promotions.md)はClaude Codeが
 このスクリプトの実行前に作成済みであること。投稿文そのものの生成は行わない。
 
-行うこと:
-  1. article_id/URL形式の検証
-  2. draft候補の特定(1件のみ許可)
-  3. topics.csvへの登録(未登録なら追加) + published更新
-  4. draft -> published への移動
-  5. SNS宣伝ファイルの存在確認とpromotions.csvへの10件登録
-  6. verify_article_workflow.py による検証
-  7. 問題なければ git_safe_sync.py で add -> commit -> push
+安全設計: すべてのpreflightチェック(読み取りのみ)を先に完了し、
+1件でもFAILした場合はファイルへの書き込みを一切行わずに中断する。
+書き込み(topics.csv更新・draft移動・promotions.csv登録)は、
+preflightがすべて通過した後にのみ行う。
 
-危険が伴う操作(削除・上書き・巻き戻し)は一切行わない。
+行うこと(preflight):
+  - article_id/URL形式の検証
+  - draft候補の特定(1件のみ許可)
+  - topics.csvの対象行/article_id一致の検証
+  - SNS宣伝ファイルの存在・パース(X5+Threads5・重複や不足がないか)
+  - promotions.csvの既存行が今回の登録内容と矛盾しないか
+  - git statusに、今回想定している新規ファイル(draft・SNS宣伝ファイル)以外の
+    変更・削除・staged済みファイルがないか
+
+行うこと(preflight通過後の書き込み):
+  - topics.csvへの登録/更新
+  - draft -> published への移動
+  - promotions.csvへの10件登録
+  - verify_article_workflow.py による検証
+  - 問題なければ git_safe_sync.py で add -> commit -> push
+
 途中で条件を満たさない場合はその時点で中断し、状態をそのまま報告する
-(自動ロールバックは行わない)。
+(自動ロールバックは行わない)。preflight通過後の書き込み段階でも、
+各ステップ自体が失敗した場合はそこで中断する。
 
 Usage:
     python3 scripts/complete_publish.py <article_id> <note_url>
@@ -38,11 +50,6 @@ PUBLISHED_DIR = vaw.PUBLISHED_DIR
 SOCIAL_DIR = vaw.SOCIAL_DIR
 
 URL_RE = re.compile(r"^https://note\.com/[^\[\]()]+$")
-
-
-def abort(msg):
-    print(f"[ABORT] {msg}", file=sys.stderr)
-    sys.exit(1)
 
 
 def parse_front_matter(path):
@@ -81,6 +88,116 @@ def parse_promotions_md(text):
     return entries
 
 
+def preflight(article_id, note_url):
+    """読み取りのみ。ファイルへの書き込みは一切行わない。
+
+    Returns (issues: list[str], ctx: dict). issuesが空ならすべて通過。
+    """
+    issues = []
+    ctx = {}
+
+    if not URL_RE.match(note_url):
+        issues.append(f"note URLの形式が不正です(note.com URLでない、または[]()を含む): {note_url!r}")
+
+    draft_files = sorted(DRAFT_DIR.glob("*.md")) if DRAFT_DIR.exists() else []
+    if len(draft_files) != 1:
+        issues.append(f"draft候補が{len(draft_files)}件です(1件のみ許可): {[p.name for p in draft_files]}")
+    else:
+        ctx["draft_path"] = draft_files[0]
+        title, keyword, category = parse_front_matter(draft_files[0])
+        if not title or not keyword or not category:
+            issues.append(f"draftのfront matterからtitle/keyword/categoryを取得できませんでした: {draft_files[0]}")
+        else:
+            ctx["title"], ctx["keyword"], ctx["category"] = title, keyword, category
+
+    rows = mt.read_topics()
+    ctx["topics_rows"] = rows
+    existing = next((r for r in rows if r["id"] == str(article_id)), None)
+    if existing is None:
+        existing_ids = [int(r["id"]) for r in rows if r["id"].isdigit()]
+        expected_next = max(existing_ids, default=0) + 1
+        if expected_next != article_id:
+            issues.append(
+                f"article_idが一致しません(topics.csvの次のidは{expected_next}、指定は{article_id})"
+            )
+        ctx["topics_action"] = "add"
+    else:
+        if "title" in ctx and existing["title"] != ctx["title"]:
+            issues.append(
+                "topics.csvの既存タイトルとdraftのタイトルが一致しません。"
+                f" topics.csv={existing['title']!r} draft={ctx['title']!r}"
+            )
+        ctx["topics_action"] = "update"
+        ctx["existing_topics_row"] = existing
+
+    xx = f"{article_id:02d}"
+    promo_md = SOCIAL_DIR / f"article-{xx}-promotions.md"
+    if not promo_md.exists():
+        issues.append(f"SNS宣伝ファイルが見つかりません: {promo_md}")
+    else:
+        ctx["promo_md"] = promo_md
+        entries = parse_promotions_md(promo_md.read_text(encoding="utf-8"))
+        x_entries = [e for e in entries if e[0] == "x"]
+        th_entries = [e for e in entries if e[0] == "threads"]
+        if len(x_entries) != 5 or len(th_entries) != 5:
+            issues.append(
+                f"SNS宣伝ファイルのパース結果が不正です(X={len(x_entries)} Threads={len(th_entries)}、"
+                "それぞれ5件必要です)"
+            )
+        keys = [(p, pt) for p, pt, _ in entries]
+        dupes = {k for k in keys if keys.count(k) > 1}
+        if dupes:
+            issues.append(f"SNS宣伝ファイル内でplatform/post_typeが重複しています: {sorted(dupes)}")
+        if len(x_entries) == 5 and len(th_entries) == 5 and not dupes:
+            ctx["promo_entries"] = entries
+
+    if "promo_entries" in ctx:
+        target_keys = {(p, pt) for p, pt, _ in ctx["promo_entries"]}
+        existing_promo_rows = [r for r in mp.read_rows() if r["article_id"] == str(article_id)]
+        stray = [
+            r for r in existing_promo_rows
+            if (r["platform"], r["post_type"]) not in target_keys
+        ]
+        if stray:
+            issues.append(
+                "promotions.csvに、今回のSNS宣伝ファイルの内容と一致しない既存行があります"
+                f"(安全に再実行できません): {stray}"
+            )
+        ctx["existing_promo_rows"] = existing_promo_rows
+
+    try:
+        git_entries = vaw.git_status_entries()
+    except RuntimeError as e:
+        issues.append(f"git status取得に失敗しました: {e}")
+        git_entries = []
+
+    deleted = [p for c, p in git_entries if "D" in c]
+    if deleted:
+        issues.append(f"削除されたファイルがgit statusにあります: {deleted}")
+
+    already_staged = [p for c, p in git_entries if c[0] not in (" ", "?")]
+    if already_staged:
+        issues.append(f"既にstagedされているファイルがあります(想定外): {already_staged}")
+
+    # このスクリプト実行前に許可される変更は、まだcommitされていない
+    # draft本体とSNS宣伝ファイル(いずれもClaude Codeが直前に作成したもの)のみ。
+    allowed_pre_existing = set()
+    if "draft_path" in ctx:
+        allowed_pre_existing.add(str(ctx["draft_path"].relative_to(ROOT)))
+    if "promo_md" in ctx:
+        allowed_pre_existing.add(str(ctx["promo_md"].relative_to(ROOT)))
+    xx_thumb = f"{article_id:02d}"
+    thumb_path = vaw.THUMBNAILS_DIR / f"article-{xx_thumb}-thumbnail.md"
+    if article_id >= 9 and thumb_path.exists():
+        allowed_pre_existing.add(str(thumb_path.relative_to(ROOT)))
+
+    unexpected = [p for _, p in git_entries if p not in allowed_pre_existing]
+    if unexpected:
+        issues.append(f"git statusに想定外の変更ファイルがあります: {unexpected}")
+
+    return issues, ctx
+
+
 def main():
     if len(sys.argv) != 3:
         print("Usage: complete_publish.py <article_id> <note_url>")
@@ -90,92 +207,76 @@ def main():
     note_url = sys.argv[2]
 
     if not article_id_arg.isdigit():
-        abort(f"article_idは整数である必要があります: {article_id_arg!r}")
+        print(f"[ABORT] article_idは整数である必要があります: {article_id_arg!r}", file=sys.stderr)
+        sys.exit(1)
     article_id = int(article_id_arg)
 
-    if not URL_RE.match(note_url):
-        abort(f"note URLの形式が不正です(note.com URLでない、または[]()を含む): {note_url!r}")
+    issues, ctx = preflight(article_id, note_url)
 
-    draft_files = sorted(DRAFT_DIR.glob("*.md")) if DRAFT_DIR.exists() else []
-    if len(draft_files) != 1:
-        abort(f"draft候補が{len(draft_files)}件です(1件のみ許可): {[p.name for p in draft_files]}")
-    draft_path = draft_files[0]
+    print(f"[PREFLIGHT] {len(issues)}件の問題" if issues else "[PREFLIGHT] すべて通過(書き込みはまだ行っていません)")
+    for issue in issues:
+        print(f"[FAIL] {issue}")
 
-    title, keyword, category = parse_front_matter(draft_path)
-    if not title or not keyword or not category:
-        abort(f"draftのfront matterからtitle/keyword/categoryを取得できませんでした: {draft_path}")
+    if issues:
+        print(
+            "[ABORT] preflightチェックで問題が見つかったため、"
+            "topics.csv・draft・promotions.csvへの書き込みは一切行っていません。",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-    rows = mt.read_topics()
-    existing = next((r for r in rows if r["id"] == str(article_id)), None)
+    # --- ここから書き込み(preflightをすべて通過した場合のみ到達) ---
 
-    if existing is None:
-        existing_ids = [int(r["id"]) for r in rows if r["id"].isdigit()]
-        expected_next = max(existing_ids, default=0) + 1
-        if expected_next != article_id:
-            abort(
-                f"article_idが一致しません(topics.csvの次のidは{expected_next}、"
-                f"指定は{article_id})。topics.csvは変更していません。"
-            )
-        assigned_id = mt.cmd_add_topic(title, keyword, category)
+    title = ctx["title"]
+
+    if ctx["topics_action"] == "add":
+        assigned_id = mt.cmd_add_topic(title, ctx["keyword"], ctx["category"])
         if assigned_id != str(article_id):
-            abort(f"予期しないid割り当てです: {assigned_id}")
-    else:
-        if existing["title"] != title:
-            abort(
-                "topics.csvの既存タイトルとdraftのタイトルが一致しません。"
-                f" topics.csv={existing['title']!r} draft={title!r}"
-            )
+            print(f"[ABORT] 予期しないid割り当てです: {assigned_id}", file=sys.stderr)
+            sys.exit(1)
 
     mt.cmd_mark_published(str(article_id), note_url)
 
+    draft_path = ctx["draft_path"]
     PUBLISHED_DIR.mkdir(parents=True, exist_ok=True)
     published_path = PUBLISHED_DIR / draft_path.name
     if published_path.exists():
-        abort(f"移動先に同名ファイルが既に存在します(移動を中断): {published_path}")
+        print(f"[ABORT] 移動先に同名ファイルが既に存在します(移動を中断): {published_path}", file=sys.stderr)
+        sys.exit(1)
     shutil.move(str(draft_path), str(published_path))
     print(f"[OK] draft -> published へ移動: {published_path.relative_to(ROOT)}")
 
-    xx = f"{article_id:02d}"
-    promo_md = SOCIAL_DIR / f"article-{xx}-promotions.md"
-    if not promo_md.exists():
-        abort(
-            f"SNS宣伝ファイルが見つかりません: {promo_md}"
-            "(先にClaude CodeでSNS投稿文を作成・保存してください。"
-            "topics.csv更新とdraft移動はすでに完了しています)"
-        )
-
-    entries = parse_promotions_md(promo_md.read_text(encoding="utf-8"))
-    x_entries = [e for e in entries if e[0] == "x"]
-    th_entries = [e for e in entries if e[0] == "threads"]
-    if len(x_entries) != 5 or len(th_entries) != 5:
-        abort(
-            f"SNS宣伝ファイルのパース結果が不正です(X={len(x_entries)} Threads={len(th_entries)})。"
-            "promotions.csvへの登録は行っていません。"
-        )
-
-    for platform, post_type, timing in entries:
+    for platform, post_type, timing in ctx["promo_entries"]:
         mp.cmd_add(str(article_id), title, platform, post_type, note_url, timing)
 
     promo_rows = [r for r in mp.read_rows() if r["article_id"] == str(article_id)]
     x_n = sum(1 for r in promo_rows if r["platform"] == "x")
     th_n = sum(1 for r in promo_rows if r["platform"] == "threads")
     if len(promo_rows) != 10 or x_n != 5 or th_n != 5:
-        abort(f"promotions.csv登録件数の検証に失敗しました: 合計{len(promo_rows)} X={x_n} Threads={th_n}")
+        print(
+            f"[ABORT] promotions.csv登録件数の検証に失敗しました: 合計{len(promo_rows)} X={x_n} Threads={th_n}"
+            "(ここまでの変更は残っています。ロールバックは行いません)",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     if not all(r["status"] == "ready" for r in promo_rows):
-        abort("promotions.csvにstatus=ready以外の行があります")
+        print("[ABORT] promotions.csvにstatus=ready以外の行があります", file=sys.stderr)
+        sys.exit(1)
     print(f"[OK] promotions.csv登録確認: 合計{len(promo_rows)} X={x_n} Threads={th_n} 全件ready")
 
     report_lines, verify_ok = vaw.run_checks(article_id)
     print("\n".join(report_lines))
     if not verify_ok:
-        abort("verify_article_workflowでFAILが検出されたため、git保存を行いません")
+        print("[ABORT] verify_article_workflowでFAILが検出されたため、git保存を行いません", file=sys.stderr)
+        sys.exit(1)
 
     expected = vaw.expected_files_for(article_id, mt.read_topics())
     commit_msg = f"Publish article {article_id}: {title} with social promotion package"
     sync_ok, sync_log = gss.safe_sync(sorted(expected), commit_msg)
     print("\n".join(sync_log))
     if not sync_ok:
-        abort("git_safe_syncが失敗しました(上記ログを確認してください)")
+        print("[ABORT] git_safe_syncが失敗しました(上記ログを確認してください)", file=sys.stderr)
+        sys.exit(1)
 
     print("complete_publish.py: 全工程成功")
 

@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import verify_article_workflow as vaw  # noqa: E402
 import git_safe_sync as gss  # noqa: E402
 import manage_promotions as mp  # noqa: E402
 
@@ -26,6 +27,49 @@ import manage_promotions as mp  # noqa: E402
 def abort(msg):
     print(f"[ABORT] {msg}", file=sys.stderr)
     sys.exit(1)
+
+
+def preflight(article_id, platform, post_type):
+    """読み取りのみ。mark-postedは実行しない。
+
+    Returns (issues: list[str], target_row: dict|None, others_before: list[dict]).
+    """
+    issues = []
+
+    try:
+        git_entries = vaw.git_status_entries()
+    except RuntimeError as e:
+        issues.append(f"git status取得に失敗しました: {e}")
+        git_entries = []
+
+    deleted = [p for c, p in git_entries if "D" in c]
+    if deleted:
+        issues.append(f"削除されたファイルがgit statusにあります: {deleted}")
+    if git_entries:
+        issues.append(
+            "git statusに既存の変更があります(このトリガーの実行前はcleanである必要があります): "
+            f"{[p for _, p in git_entries]}"
+        )
+
+    rows = mp.read_rows()
+    matches = [
+        r for r in rows
+        if r["article_id"] == str(article_id)
+        and r["platform"].lower() == platform
+        and r["post_type"] == post_type
+    ]
+    target = None
+    if len(matches) == 0:
+        issues.append(f"該当行が見つかりません: article_id={article_id} platform={platform} post_type={post_type}")
+    elif len(matches) > 1:
+        issues.append(f"該当行が複数あり一意に特定できません(推測しません): {matches}")
+    else:
+        target = matches[0]
+        if target["status"] != "ready":
+            issues.append(f"対象行はstatus={target['status']!r}のため処理できません(readyのみ処理可能)")
+
+    others_before = [dict(r) for r in rows if r is not target] if target is not None else []
+    return issues, target, others_before
 
 
 def main():
@@ -36,23 +80,18 @@ def main():
     article_id, platform, post_type = sys.argv[1], sys.argv[2], sys.argv[3]
     platform = platform.lower()
 
-    rows = mp.read_rows()
-    matches = [
-        r for r in rows
-        if r["article_id"] == str(article_id)
-        and r["platform"].lower() == platform
-        and r["post_type"] == post_type
-    ]
-    if len(matches) == 0:
-        abort(f"該当行が見つかりません: article_id={article_id} platform={platform} post_type={post_type}")
-    if len(matches) > 1:
-        abort(f"該当行が複数あり一意に特定できません(推測しません): {matches}")
+    issues, target, others_before = preflight(article_id, platform, post_type)
 
-    target = matches[0]
-    if target["status"] != "ready":
-        abort(f"対象行はstatus={target['status']!r}のため処理しません(readyのみ処理可能)")
+    print(f"[PREFLIGHT] {len(issues)}件の問題" if issues else "[PREFLIGHT] すべて通過(mark-postedはまだ実行していません)")
+    for issue in issues:
+        print(f"[FAIL] {issue}")
 
-    others_before = [dict(r) for r in rows if r is not target]
+    if issues:
+        print(
+            "[ABORT] preflightチェックで問題が見つかったため、mark-postedは実行していません。",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     mp.cmd_mark_posted(str(article_id), platform, post_type)
 
