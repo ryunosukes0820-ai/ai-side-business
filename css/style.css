@@ -293,13 +293,13 @@ header nav .nav-cta:hover {
 
 #hero {
   padding-top: 72px;
-  padding-bottom: 96px;
+  padding-bottom: 65px;
   background: linear-gradient(180deg, var(--color-bg-soft) 0%, #ffffff 70%);
 }
 
 .hero-inner {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 56px;
   align-items: center;
 }
@@ -314,10 +314,17 @@ header nav .nav-cta:hover {
 }
 
 .hero-title {
-  font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+  font-size: clamp(1.8rem, 3.6vw, 2.5rem);
   font-weight: 800;
   line-height: 1.45;
   margin-bottom: 24px;
+}
+
+/* PC(1200px以上)では「Web集客をサポートします。」が途中で折り返さないようにする */
+@media (min-width: 1200px) {
+  .hero-line-2 {
+    white-space: nowrap;
+  }
 }
 
 .hero-desc {
@@ -331,7 +338,7 @@ header nav .nav-cta:hover {
 
 .hero-visual {
   position: relative;
-  height: 380px;
+  height: 410px;
 }
 
 .browser-card {
@@ -431,6 +438,17 @@ header nav .nav-cta:hover {
 
 .card-grid-4 {
   grid-template-columns: repeat(4, 1fr);
+}
+
+/* トップページWORKSの厳選4件のみ: PCは2列×2段、768px以下は1列 */
+.works-featured-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 768px) {
+  .works-featured-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .card {
@@ -538,6 +556,18 @@ header nav .nav-cta:hover {
   color: #B45309;
 }
 
+.badge-limited {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: var(--color-bg-soft);
+  color: var(--color-primary-dark);
+  border: 1px solid rgba(20, 115, 230, 0.25);
+  margin-top: 6px;
+}
+
 .card-meta {
   font-size: 0.82rem !important;
   color: var(--color-muted);
@@ -603,11 +633,22 @@ header nav .nav-cta:hover {
   gap: 18px;
 }
 
+@media (max-width: 1200px) {
+  .flow-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-color: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 24px 18px;
+  min-height: 120px;
   text-align: center;
 }
 
@@ -864,6 +905,11 @@ footer {
    Contact form
 ============================ */
 
+/* CONTACTページのみ: 説明文からフォームまでの余白を通常セクションより詰める */
+#contact-form {
+  padding-top: 70px;
+}
+
 .contact-layout {
   max-width: 760px;
   margin: 0 auto;
@@ -996,16 +1042,35 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .flow-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .about-inner {
     grid-template-columns: 1fr;
   }
 
   .about-photo-placeholder {
     max-width: 220px;
+  }
+}
+
+/* SERVICE・PRICEのみ: タブレット幅(769px〜1000px)で1・2枚目を1段目、3枚目を2段目中央に */
+@media (min-width: 769px) and (max-width: 1000px) {
+  #service .card-grid,
+  #price .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #service .card-grid > :nth-child(3),
+  #price .card-grid > :nth-child(3) {
+    grid-column: 1 / -1;
+    width: calc(50% - 14px);
+    margin: 0 auto;
+  }
+}
+
+/* SERVICE・PRICEのみ: 768px以下は1列(他セクションの挙動は変更しない) */
+@media (max-width: 768px) {
+  #service .card-grid,
+  #price .card-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1062,7 +1127,7 @@ footer {
   }
 
   .flow-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .form-row {
@@ -1084,5 +1149,11 @@ footer {
   .footer-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .flow-grid {
+    grid-template-columns: 1fr;
   }
 }
