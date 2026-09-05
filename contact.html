@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact | Ryu</title>
+  <title>CONTACT | Ryunosuke Sato</title>
+  <meta name="description" content="SEO記事、LPライティング、LP制作についてのご相談はこちらから。">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <header>
-    <p class="site-name">Ryu</p>
+    <p class="site-name">Ryunosuke <span>Sato</span></p>
     <button class="menu-toggle" aria-label="メニューを開閉する" aria-expanded="false">
       <span></span>
       <span></span>
@@ -17,51 +18,120 @@
     </button>
     <nav>
       <ul>
-        <li><a href="index.html">Top</a></li>
-        <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#services">Services</a></li>
-        <li><a href="works.html">Works</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="index.html#service">SERVICE</a></li>
+        <li><a href="index.html#works">WORKS</a></li>
+        <li><a href="index.html#about">ABOUT</a></li>
+        <li><a href="contact.html" class="nav-cta">CONTACT</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
 
-    <section id="contact-intro">
-      <h1>お問い合わせ</h1>
-      <p>
-        AI活用に関するご相談・お仕事のご依頼などは、以下のフォームからお気軽にご連絡ください。
-      </p>
+    <section class="page-intro">
+      <div class="container">
+        <span class="section-eyebrow">CONTACT</span>
+        <h1>制作のご相談</h1>
+        <p>
+          SEO記事、LPライティング、LP制作についてお気軽にご相談ください。<br>
+          ご相談内容を確認したうえで、制作内容や料金についてご案内します。
+        </p>
+      </div>
     </section>
 
-    <section id="contact-form">
-      <form action="https://formspree.io/f/xjybzrdy" method="POST">
-        <input type="hidden" name="_subject" value="AI Side Businessサイトからのお問い合わせ">
+    <section>
+      <div class="container contact-layout">
+        <!-- TODO: 問い合わせフォーム送信先を設定 -->
+        <!-- 既存のFormspree宛先(action)はそのまま維持しています。宛先メールの受信確認のみ別途お願いします。 -->
+        <form action="https://formspree.io/f/xjybzrdy" method="POST">
+          <input type="hidden" name="_subject" value="ポートフォリオサイトからのお問い合わせ">
 
-        <div class="form-group">
-          <label for="name">お名前</label>
-          <input type="text" id="name" name="name" required>
-        </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">お名前</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="company">会社名 <span class="form-optional">(任意)</span></label>
+              <input type="text" id="company" name="company">
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label for="email">メールアドレス</label>
-          <input type="email" id="email" name="email" required>
-        </div>
+          <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" name="email" required>
+          </div>
 
-        <div class="form-group">
-          <label for="message">ご相談内容</label>
-          <textarea id="message" name="message" rows="6" required></textarea>
-        </div>
+          <div class="form-group">
+            <label>ご相談内容</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="inquiry_type" value="SEO記事制作" checked>
+                SEO記事制作
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="inquiry_type" value="LPライティング">
+                LPライティング
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="inquiry_type" value="LP制作">
+                LP制作
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="inquiry_type" value="その他">
+                その他
+              </label>
+            </div>
+          </div>
 
-        <button type="submit" class="button">送信する</button>
-      </form>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="budget">ご予算 <span class="form-optional">(任意)</span></label>
+              <input type="text" id="budget" name="budget" placeholder="例: 3万円程度">
+            </div>
+            <div class="form-group">
+              <label for="deadline">希望納期 <span class="form-optional">(任意)</span></label>
+              <input type="text" id="deadline" name="deadline" placeholder="例: 1ヶ月以内">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="overview">商品・サービス概要 <span class="form-optional">(任意)</span></label>
+            <textarea id="overview" name="service_overview" rows="4" placeholder="ご依頼の商品・サービスについて簡単にご記入ください"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="reference_url">参考URL <span class="form-optional">(任意)</span></label>
+            <input type="url" id="reference_url" name="reference_url" placeholder="https://">
+          </div>
+
+          <div class="form-group">
+            <label for="message">詳細・ご相談内容</label>
+            <textarea id="message" name="message" rows="6" required placeholder="ご相談内容の詳細をご記入ください"></textarea>
+          </div>
+
+          <button type="submit" class="button button-primary button-block">送信する</button>
+        </form>
+      </div>
     </section>
 
   </main>
 
   <footer>
-    <p>&copy; 2026 Ryu</p>
+    <div class="container">
+      <div class="footer-inner">
+        <p class="site-name">Ryunosuke Sato</p>
+        <nav class="footer-nav">
+          <ul>
+            <li><a href="index.html#service">Service</a></li>
+            <li><a href="index.html#works">Works</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="footer-copy">&copy; 2026 Ryunosuke Sato</p>
+    </div>
   </footer>
 
   <script src="js/main.js"></script>
