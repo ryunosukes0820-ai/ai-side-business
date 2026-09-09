@@ -5,12 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CONTACT | Ryunosuke Sato</title>
   <meta name="description" content="SEO記事、LPライティング、LP制作についてのご相談はこちらから。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <header>
-    <p class="site-name">Ryunosuke <span>Sato</span></p>
+    <a href="index.html" class="site-brand">
+      <span class="site-brand-name">RYUNOSUKE SATO</span>
+      <span class="site-brand-role">WEB CONTENT CREATOR</span>
+    </a>
     <button class="menu-toggle" aria-label="メニューを開閉する" aria-expanded="false">
       <span></span>
       <span></span>
@@ -18,10 +24,11 @@
     </button>
     <nav>
       <ul>
-        <li><a href="index.html#service">SERVICE</a></li>
-        <li><a href="index.html#works">WORKS</a></li>
-        <li><a href="index.html#about">ABOUT</a></li>
-        <li><a href="contact.html" class="nav-cta">CONTACT</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="index.html#service">Service</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="contact.html" class="nav-cta">お問い合わせ</a></li>
       </ul>
     </nav>
   </header>
@@ -40,7 +47,7 @@
     </section>
 
     <section id="contact-form">
-      <div class="container contact-layout">
+      <div class="container contact-layout glass-panel">
         <!-- TODO: 問い合わせフォーム送信先を設定 -->
         <!-- 既存のFormspree宛先(action)はそのまま維持しています。宛先メールの受信確認のみ別途お願いします。 -->
         <form action="https://formspree.io/f/xjybzrdy" method="POST">
@@ -120,11 +127,14 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <p class="site-name">Ryunosuke Sato</p>
+        <div class="footer-brand">
+          <p class="site-name">Ryunosuke Sato</p>
+          <p class="footer-tagline">WEB CONTENT PORTFOLIO</p>
+        </div>
         <nav class="footer-nav">
           <ul>
             <li><a href="index.html#service">Service</a></li>
-            <li><a href="index.html#works">Works</a></li>
+            <li><a href="index.html#featured-works">Works</a></li>
             <li><a href="index.html#about">About</a></li>
             <li><a href="contact.html">Contact</a></li>
           </ul>

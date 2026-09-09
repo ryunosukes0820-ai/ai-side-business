@@ -5,12 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WORKS | Ryunosuke Sato</title>
   <meta name="description" content="SEOライティング・LP制作の制作実績一覧。自主制作の架空案件LP「FLEXIA PERSONAL GYM」もご紹介します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <header>
-    <p class="site-name">Ryunosuke <span>Sato</span></p>
+    <a href="index.html" class="site-brand">
+      <span class="site-brand-name">RYUNOSUKE SATO</span>
+      <span class="site-brand-role">WEB CONTENT CREATOR</span>
+    </a>
     <button class="menu-toggle" aria-label="メニューを開閉する" aria-expanded="false">
       <span></span>
       <span></span>
@@ -18,10 +24,11 @@
     </button>
     <nav>
       <ul>
-        <li><a href="index.html#service">SERVICE</a></li>
-        <li><a href="index.html#works">WORKS</a></li>
-        <li><a href="index.html#about">ABOUT</a></li>
-        <li><a href="contact.html" class="nav-cta">CONTACT</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="index.html#service">Service</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="contact.html" class="nav-cta">お問い合わせ</a></li>
       </ul>
     </nav>
   </header>
@@ -281,11 +288,13 @@
       </div>
     </section>
 
-    <section class="final-cta-wrap">
+    <section class="final-cta-wrap" id="contact-cta">
       <div class="container">
         <div class="final-cta reveal">
-          <h2 class="section-title">SEO記事・LP制作について<br>お気軽にご相談ください。</h2>
-          <a href="contact.html" class="button button-white">制作について相談する</a>
+          <span class="section-eyebrow">Contact</span>
+          <h2 class="section-title">お気軽に<br class="mobile-break">ご相談ください</h2>
+          <p>SEO記事・LPライティング・LP制作のご相談を受け付けています。</p>
+          <a href="contact.html" class="button button-white">お問い合わせはこちら</a>
         </div>
       </div>
     </section>
@@ -295,11 +304,14 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <p class="site-name">Ryunosuke Sato</p>
+        <div class="footer-brand">
+          <p class="site-name">Ryunosuke Sato</p>
+          <p class="footer-tagline">WEB CONTENT PORTFOLIO</p>
+        </div>
         <nav class="footer-nav">
           <ul>
             <li><a href="index.html#service">Service</a></li>
-            <li><a href="index.html#works">Works</a></li>
+            <li><a href="index.html#featured-works">Works</a></li>
             <li><a href="index.html#about">About</a></li>
             <li><a href="contact.html">Contact</a></li>
           </ul>

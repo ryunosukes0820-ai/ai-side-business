@@ -5,12 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ryunosuke Sato | SEOライティング・LP制作</title>
   <meta name="description" content="SEOライティングからLPの構成・文章・デザイン・制作まで、一貫して対応します。Web集客のご相談はお気軽にどうぞ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="portfolio-line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#3B82F6" />
+        <stop offset="100%" stop-color="#22D3EE" />
+      </linearGradient>
+    </defs>
+  </svg>
+
   <header>
-    <p class="site-name">Ryunosuke <span>Sato</span></p>
+    <a href="#hero" class="site-brand">
+      <span class="site-brand-name">RYUNOSUKE SATO</span>
+      <span class="site-brand-role">WEB CONTENT CREATOR</span>
+    </a>
     <button class="menu-toggle" aria-label="メニューを開閉する" aria-expanded="false">
       <span></span>
       <span></span>
@@ -18,10 +33,11 @@
     </button>
     <nav>
       <ul>
-        <li><a href="#service">SERVICE</a></li>
-        <li><a href="#works">WORKS</a></li>
-        <li><a href="#about">ABOUT</a></li>
-        <li><a href="contact.html" class="nav-cta">CONTACT</a></li>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#featured-works">Works</a></li>
+        <li><a href="#service">Service</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="contact.html" class="nav-cta">お問い合わせ</a></li>
       </ul>
     </nav>
   </header>
@@ -30,57 +46,119 @@
 
     <!-- HERO -->
     <section id="hero">
+      <div class="hero-bg-glow" aria-hidden="true"></div>
+      <div class="hero-grid-overlay" aria-hidden="true"></div>
+      <div class="hero-light-streak" aria-hidden="true"></div>
       <div class="container hero-inner">
-        <div class="hero-content">
-          <span class="hero-eyebrow">SEO WRITING / LP DESIGN</span>
-          <h1 class="hero-title">SEO記事・LP制作で、<br><span class="hero-line-2">Web集客をサポートします。</span></h1>
+        <div class="hero-content reveal">
+          <span class="hero-eyebrow">Web Content Creator</span>
+          <h1 class="hero-title-en">RYUNOSUKE SATO<br><span class="hero-title-gradient">PORTFOLIO</span></h1>
+          <p class="hero-copy-jp">伝わる文章と、使えるデザインで、Web集客を支える。</p>
           <p class="hero-desc">
             SEOライティングからLPの構成・文章・デザイン・制作まで、一貫して対応します。
             「何を伝えればいいかわからない」という段階から、情報を整理し、伝わるWebコンテンツへ形にします。
           </p>
           <div class="button-group">
-            <a href="#works" class="button button-primary">制作実績を見る</a>
-            <a href="contact.html" class="button button-outline">制作について相談する</a>
+            <a href="#featured-works" class="button button-primary">制作実績を見る</a>
+            <a href="contact.html" class="button button-outline">お問い合わせ</a>
+          </div>
+          <span class="hero-subline">SEO WRITING / LP WRITING / LP DESIGN / CODING</span>
+        </div>
+
+        <div class="hero-visual reveal" aria-hidden="true">
+          <div class="hero-dashboard-wrap">
+            <div class="hero-dashboard-floating hero-dashboard-floating-a">
+              <span class="status-dot"></span>
+              SEO WRITING / ACTIVE
+            </div>
+
+            <div class="hero-dashboard-panel">
+              <div class="hero-dashboard-topbar">
+                <span class="hero-dashboard-dot"></span>
+                <span class="hero-dashboard-dot"></span>
+                <span class="hero-dashboard-dot"></span>
+                <span class="hero-dashboard-topbar-label">PORTFOLIO</span>
+              </div>
+
+              <div class="hero-dashboard-flow">
+                <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+                  <path class="hero-dashboard-flow-line" d="M30,58 C90,16 120,66 170,32 S260,16 280,26"></path>
+                  <circle class="hero-dashboard-flow-node" cx="30" cy="58" r="6"></circle>
+                  <circle class="hero-dashboard-flow-node" cx="170" cy="32" r="6"></circle>
+                  <circle class="hero-dashboard-flow-node hero-dashboard-flow-node-fill" cx="280" cy="26" r="6"></circle>
+                </svg>
+              </div>
+
+              <div class="hero-dashboard-status-grid">
+                <div class="hero-dashboard-status-card">
+                  <span class="hero-dashboard-status-label">SEO Content</span>
+                  <span class="hero-dashboard-status-value"><span class="status-dot"></span>ACTIVE</span>
+                </div>
+                <div class="hero-dashboard-status-card">
+                  <span class="hero-dashboard-status-label">LP Design</span>
+                  <span class="hero-dashboard-status-value"><span class="status-dot"></span>READY</span>
+                </div>
+                <div class="hero-dashboard-status-card">
+                  <span class="hero-dashboard-status-label">Web Production</span>
+                  <span class="hero-dashboard-status-value"><span class="status-dot"></span>ACTIVE</span>
+                </div>
+                <div class="hero-dashboard-status-card">
+                  <span class="hero-dashboard-status-label">Available</span>
+                  <span class="hero-dashboard-status-value"><span class="status-dot"></span>OPEN</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-dashboard-floating hero-dashboard-floating-b">
+              <span class="status-dot"></span>
+              LP DESIGN / READY
+            </div>
           </div>
         </div>
-        <div class="hero-visual" aria-hidden="true">
-          <div class="browser-card card-back">
-            <div class="browser-bar">
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
+      </div>
+    </section>
+
+    <!-- FEATURED WORKS -->
+    <section id="featured-works">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow">Featured Works</span>
+          <h2 class="section-title">注目の制作実績</h2>
+          <p class="section-lead">自主制作の架空案件LPです。企画からデザイン・実装まで一貫して制作しました。</p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card reveal">
+            <img class="work-card-thumb" src="lp-auto/projects/flexia-personal-gym/site/images/flexia-hero.webp" alt="FLEXIA PERSONAL GYM LPのファーストビュー" loading="lazy">
+            <span class="work-tag">LP DESIGN / PRODUCTION</span><span class="badge badge-sample">自主制作・架空案件</span>
+            <h3>FLEXIA PERSONAL GYM</h3>
+            <p>忙しい会社員向けの架空パーソナルジムLP。ターゲット分析から構成・ライティング・デザイン・実装まで一貫して制作。</p>
+            <div class="card-links">
+              <a href="lp-auto/projects/flexia-personal-gym/site/index.html" target="_blank" rel="noopener noreferrer" class="link-arrow">LPを見る</a>
             </div>
-            <div class="browser-body">
-              <div class="browser-line short"></div>
-              <div class="browser-line long"></div>
-              <div class="browser-line medium"></div>
+          </article>
+          <article class="card reveal">
+            <img class="work-card-thumb" src="lp-auto/projects/lumiel-english/site/images/lumiel-hero.webp" alt="LUMIEL ENGLISH LPのファーストビュー" loading="lazy">
+            <span class="work-tag">LP DESIGN / PRODUCTION</span><span class="badge badge-sample">自主制作・架空案件</span>
+            <h3>LUMIEL ENGLISH</h3>
+            <p>忙しい会社員・英会話初心者向けの架空オンライン英会話LP。ターゲット分析から構成・ライティング・デザイン・実装まで一貫して制作。</p>
+            <div class="card-links">
+              <a href="lp-auto/projects/lumiel-english/site/index.html" target="_blank" rel="noopener noreferrer" class="link-arrow">LPを見る</a>
             </div>
-          </div>
-          <div class="browser-card card-front">
-            <div class="browser-bar">
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
+          </article>
+          <article class="card reveal">
+            <img class="work-card-thumb" src="images/nexora-ai-portfolio.webp" alt="NEXORA AI LPのイメージビジュアル" loading="lazy">
+            <span class="work-tag">LP DESIGN / PRODUCTION</span><span class="badge badge-sample">自主制作・架空案件</span>
+            <h3>NEXORA AI</h3>
+            <p>AI活用を検討する中小企業向けの架空AI業務効率化支援LP。BtoB SaaS系デザインで企画から実装まで制作。</p>
+            <div class="card-links">
+              <a href="lp-auto/projects/nexora-ai/site/index.html" target="_blank" rel="noopener noreferrer" class="link-arrow">LPを見る</a>
             </div>
-            <div class="browser-body">
-              <div class="browser-line medium"></div>
-              <div class="browser-line short"></div>
-              <div class="browser-line accent"></div>
-            </div>
-          </div>
-          <div class="browser-card card-main">
-            <div class="browser-bar">
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
-            </div>
-            <div class="browser-body">
-              <div class="browser-line long"></div>
-              <div class="browser-line medium"></div>
-              <div class="browser-line short"></div>
-              <div class="browser-line accent"></div>
-            </div>
-          </div>
+          </article>
+        </div>
+
+        <div class="works-more reveal">
+          <a href="works.html" class="button button-outline">すべての実績を見る</a>
         </div>
       </div>
     </section>
@@ -93,69 +171,64 @@
           <h2 class="section-title">対応できること</h2>
         </div>
 
-        <div class="card-grid">
+        <div class="service-list">
 
-          <article class="card reveal">
-            <span class="card-number">01</span>
-            <h3>SEOライティング</h3>
-            <p>検索意図と読者ニーズを整理し、構成作成から本文執筆、編集・校正まで対応します。</p>
-            <span class="card-price">1,000円〜</span>
-            <span class="badge-limited">実績制作期間限定</span>
-            <ul class="card-list">
-              <li>検索意図整理</li>
-              <li>構成作成</li>
-              <li>本文執筆</li>
-              <li>編集・校正</li>
-            </ul>
-            <a href="#price" class="link-arrow">詳しく見る</a>
+          <article class="service-row reveal">
+            <span class="service-row-number">01</span>
+            <div class="service-row-body">
+              <h3>SEOライティング</h3>
+              <p>検索意図と読者ニーズを整理し、構成作成から本文執筆、編集・校正まで対応します。</p>
+              <span class="service-row-bullets">検索意図整理 / 構成作成 / 本文執筆 / 編集・校正</span>
+            </div>
+            <div class="service-row-price">
+              <span class="card-price">1,000円〜</span>
+              <span class="badge-limited">実績制作期間限定</span>
+              <div class="service-row-link"><a href="#price" class="link-arrow">詳しく見る</a></div>
+            </div>
           </article>
 
-          <article class="card reveal">
-            <span class="card-number">02</span>
-            <h3>LPライティング</h3>
-            <p>商品・サービスの魅力を整理し、LP構成、キャッチコピー、本文、CTAまで制作します。</p>
-            <span class="card-price">1,500円〜</span>
-            <span class="badge-limited">実績制作期間限定</span>
-            <ul class="card-list">
-              <li>ターゲット整理</li>
-              <li>LP構成</li>
-              <li>キャッチコピー</li>
-              <li>本文</li>
-              <li>CTA</li>
-            </ul>
-            <a href="#price" class="link-arrow">詳しく見る</a>
+          <article class="service-row reveal">
+            <span class="service-row-number">02</span>
+            <div class="service-row-body">
+              <h3>LPライティング</h3>
+              <p>商品・サービスの魅力を整理し、LP構成、キャッチコピー、本文、CTAまで制作します。</p>
+              <span class="service-row-bullets">ターゲット整理 / LP構成 / キャッチコピー / 本文 / CTA</span>
+            </div>
+            <div class="service-row-price">
+              <span class="card-price">1,500円〜</span>
+              <span class="badge-limited">実績制作期間限定</span>
+              <div class="service-row-link"><a href="#price" class="link-arrow">詳しく見る</a></div>
+            </div>
           </article>
 
-          <article class="card reveal">
-            <span class="card-number">03</span>
-            <h3>LP制作</h3>
-            <p>構成・ライティング・デザイン・スマートフォン対応まで一貫して制作します。</p>
-            <span class="card-price">3,000円〜</span>
-            <span class="badge-limited">実績制作期間限定</span>
-            <ul class="card-list">
-              <li>ヒアリング</li>
-              <li>LP構成</li>
-              <li>ライティング</li>
-              <li>デザイン</li>
-              <li>スマホ対応</li>
-            </ul>
-            <a href="#price" class="link-arrow">詳しく見る</a>
+          <article class="service-row reveal">
+            <span class="service-row-number">03</span>
+            <div class="service-row-body">
+              <h3>LP制作</h3>
+              <p>構成・ライティング・デザイン・スマートフォン対応まで一貫して制作します。</p>
+              <span class="service-row-bullets">ヒアリング / LP構成 / ライティング / デザイン / スマホ対応</span>
+            </div>
+            <div class="service-row-price">
+              <span class="card-price">3,000円〜</span>
+              <span class="badge-limited">実績制作期間限定</span>
+              <div class="service-row-link"><a href="#price" class="link-arrow">詳しく見る</a></div>
+            </div>
           </article>
 
         </div>
       </div>
     </section>
 
-    <!-- WORKS -->
-    <section id="works" style="background-color: var(--color-bg-soft);">
+    <!-- WRITING (テイザー) -->
+    <section id="writing">
       <div class="container">
         <div class="section-head reveal">
-          <span class="section-eyebrow">WORKS</span>
-          <h2 class="section-title">制作実績</h2>
-          <p class="section-lead" style="margin-left:auto;margin-right:auto;">SEO記事の制作実績の一部をご紹介します。</p>
+          <span class="section-eyebrow">Writing</span>
+          <h2 class="section-title">SEO記事制作</h2>
+          <p class="section-lead">SEO記事の制作実績の一部をご紹介します。</p>
         </div>
 
-        <div class="card-grid works-featured-grid">
+        <div class="card-grid writing-teaser-grid">
 
           <article class="card reveal">
             <span class="work-tag">お金・家計・資産形成</span><span class="badge badge-paid">有料note</span>
@@ -199,45 +272,8 @@
 
         </div>
 
-        <div class="section-head reveal" style="margin-top:72px;margin-bottom:32px;">
-          <span class="section-eyebrow">LP DESIGN</span>
-          <h2 class="section-title">LP制作</h2>
-          <p class="section-lead" style="margin-left:auto;margin-right:auto;">自主制作の架空案件LPです。ほかのテーマも順次制作を予定しています。</p>
-        </div>
-
-        <div class="card-grid">
-          <article class="card reveal">
-            <img class="work-card-thumb" src="lp-auto/projects/flexia-personal-gym/site/images/flexia-hero.webp" alt="FLEXIA PERSONAL GYM LPのファーストビュー" loading="lazy">
-            <span class="work-tag">LP DESIGN / PRODUCTION</span><span class="badge badge-sample">自主制作・架空案件</span>
-            <h3>FLEXIA PERSONAL GYM</h3>
-            <p>忙しい会社員向けの架空パーソナルジムLP。ターゲット分析から構成・ライティング・デザイン・実装まで一貫して制作。</p>
-            <div class="card-links">
-              <a href="lp-auto/projects/flexia-personal-gym/site/index.html" target="_blank" rel="noopener noreferrer" class="link-arrow">LPを見る</a>
-            </div>
-          </article>
-          <article class="card reveal">
-            <img class="work-card-thumb" src="lp-auto/projects/lumiel-english/site/images/lumiel-hero.webp" alt="LUMIEL ENGLISH LPのファーストビュー" loading="lazy">
-            <span class="work-tag">LP DESIGN / PRODUCTION</span><span class="badge badge-sample">自主制作・架空案件</span>
-            <h3>LUMIEL ENGLISH</h3>
-            <p>忙しい会社員・英会話初心者向けの架空オンライン英会話LP。ターゲット分析から構成・ライティング・デザイン・実装まで一貫して制作。</p>
-            <div class="card-links">
-              <a href="lp-auto/projects/lumiel-english/site/index.html" target="_blank" rel="noopener noreferrer" class="link-arrow">LPを見る</a>
-            </div>
-          </article>
-          <article class="card reveal">
-            <img class="work-card-thumb" src="images/nexora-ai-portfolio.webp" alt="NEXORA AI LPのイメージビジュアル" loading="lazy">
-            <span class="work-tag">LP DESIGN / PRODUCTION</span><span class="badge badge-sample">自主制作・架空案件</span>
-            <h3>NEXORA AI</h3>
-            <p>AI活用を検討する中小企業向けの架空AI業務効率化支援サービスLP。業務ヒアリングから導入・運用支援までを分かりやすく伝えるBtoB SaaS系デザインで制作。</p>
-            <p class="card-meta"><strong>制作範囲:</strong> 企画 / ターゲット分析 / LP構成 / LPライティング / デザイン / HTML・CSS・JavaScript実装 / レスポンシブ対応 / QAレビュー</p>
-            <div class="card-links">
-              <a href="lp-auto/projects/nexora-ai/site/index.html" target="_blank" rel="noopener noreferrer" class="link-arrow">LPを見る</a>
-            </div>
-          </article>
-        </div>
-
         <div class="works-more reveal">
-          <a href="works.html" class="button button-primary">すべての実績を見る</a>
+          <a href="works.html" class="button button-outline">すべての記事を見る</a>
         </div>
       </div>
     </section>
@@ -247,22 +283,22 @@
       <div class="container">
         <div class="section-head reveal">
           <span class="section-eyebrow">STRENGTH</span>
-          <h2 class="section-title">制作で大切にしていること</h2>
+          <h2 class="section-title">制作で大切に<br class="mobile-break">していること</h2>
         </div>
 
-        <div class="card-grid">
-          <article class="card reveal">
-            <span class="card-number">01</span>
-            <h3>構成から対応</h3>
-            <p>渡された文章をそのまま制作するだけではなく、誰に何を伝えるのかを整理するところから対応します。</p>
+        <div class="strength-list">
+          <article class="strength-item reveal">
+            <span class="strength-icon" aria-hidden="true">01</span>
+            <h3>構成から対応する設計力</h3>
+            <p>渡された文章をそのまま形にするのではなく、誰に何を伝えるかを整理するところから対応します。</p>
           </article>
-          <article class="card reveal">
-            <span class="card-number">02</span>
-            <h3>文章とデザインを一貫して制作</h3>
+          <article class="strength-item reveal">
+            <span class="strength-icon" aria-hidden="true">02</span>
+            <h3>文章とデザインの一貫制作</h3>
             <p>SEO記事、LPライティング、LP制作まで対応することで、文章とデザインの方向性を統一します。</p>
           </article>
-          <article class="card reveal">
-            <span class="card-number">03</span>
+          <article class="strength-item reveal">
+            <span class="strength-icon" aria-hidden="true">03</span>
             <h3>AIを活用した効率的な制作</h3>
             <p>リサーチ・情報整理・チェックなどにAIを活用しながら、最終的な内容は人の目で確認して納品します。</p>
           </article>
@@ -270,37 +306,78 @@
       </div>
     </section>
 
+    <!-- SKILLS / TOOLS -->
+    <section id="skills">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow">Skills / Tools</span>
+          <h2 class="section-title">制作で使用している<br class="mobile-break">スキル・ツール</h2>
+        </div>
+
+        <div class="tool-grid reveal">
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor">&lt;/&gt;</text></svg></span>
+            <span class="tool-label">HTML</span>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">{ }</text></svg></span>
+            <span class="tool-label">CSS</span>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">JS</text></svg></span>
+            <span class="tool-label">JavaScript</span>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor">GIT</text></svg></span>
+            <span class="tool-label">Git</span>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">GH</text></svg></span>
+            <span class="tool-label">GitHub</span>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor">GPT</text></svg></span>
+            <span class="tool-label">ChatGPT</span>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" stroke-width="1.6"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">&gt;_</text></svg></span>
+            <span class="tool-label">Claude Code</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- FLOW -->
-    <section id="flow" style="background-color: var(--color-bg-soft);">
+    <section id="flow">
       <div class="container">
         <div class="section-head reveal">
           <span class="section-eyebrow">FLOW</span>
           <h2 class="section-title">制作の流れ</h2>
         </div>
 
-        <div class="flow-grid">
-          <div class="flow-step reveal">
-            <span class="flow-step-number">STEP 01</span>
+        <div class="flow-timeline reveal">
+          <div class="flow-step">
+            <span class="flow-marker"><span class="flow-step-number">01</span></span>
             <h3>お問い合わせ</h3>
           </div>
-          <div class="flow-step reveal">
-            <span class="flow-step-number">STEP 02</span>
+          <div class="flow-step">
+            <span class="flow-marker"><span class="flow-step-number">02</span></span>
             <h3>ヒアリング</h3>
           </div>
-          <div class="flow-step reveal">
-            <span class="flow-step-number">STEP 03</span>
+          <div class="flow-step">
+            <span class="flow-marker"><span class="flow-step-number">03</span></span>
             <h3>ご提案・お見積り</h3>
           </div>
-          <div class="flow-step reveal">
-            <span class="flow-step-number">STEP 04</span>
+          <div class="flow-step">
+            <span class="flow-marker"><span class="flow-step-number">04</span></span>
             <h3>制作</h3>
           </div>
-          <div class="flow-step reveal">
-            <span class="flow-step-number">STEP 05</span>
+          <div class="flow-step">
+            <span class="flow-marker"><span class="flow-step-number">05</span></span>
             <h3>ご確認・修正</h3>
           </div>
-          <div class="flow-step reveal">
-            <span class="flow-step-number">STEP 06</span>
+          <div class="flow-step">
+            <span class="flow-marker"><span class="flow-step-number">06</span></span>
             <h3>納品</h3>
           </div>
         </div>
@@ -357,14 +434,16 @@
     </section>
 
     <!-- ABOUT -->
-    <section id="about" style="background-color: var(--color-bg-soft);">
+    <section id="about">
       <div class="container about-inner">
         <div class="reveal">
-          <img class="about-photo" src="images/profile-icon.png" alt="Ryunosuke Satoのプロフィール画像">
+          <div class="about-photo-frame">
+            <img class="about-photo" src="images/profile-icon.png" alt="Ryunosuke Satoのプロフィール画像">
+          </div>
         </div>
         <div class="reveal">
           <span class="section-eyebrow">ABOUT</span>
-          <h2 class="section-title" style="margin-bottom:4px;">プロフィール</h2>
+          <h2 class="section-title" style="margin-bottom:4px;">私について</h2>
           <p class="about-name" style="margin-top:16px;">Ryunosuke Sato</p>
           <div class="about-text">
             <p>SEO・Webライティング、LP制作を中心にWebコンテンツ制作を行っています。</p>
@@ -387,51 +466,51 @@
         <div class="faq-list reveal">
 
           <div class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-1" id="faq-question-1">
               <span><span class="faq-q-label">Q.</span>文章や構成が決まっていなくても依頼できますか？</span>
               <span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer">
+            <div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-question-1">
               <p>はい。ヒアリングをもとに、構成を整理するところから対応可能です。</p>
             </div>
           </div>
 
           <div class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-2" id="faq-question-2">
               <span><span class="faq-q-label">Q.</span>SEO記事の構成だけお願いできますか？</span>
               <span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer">
+            <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-question-2">
               <p>可能です。構成のみ、ライティングのみなど、ご希望に合わせて対応します。</p>
             </div>
           </div>
 
           <div class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-3" id="faq-question-3">
               <span><span class="faq-q-label">Q.</span>LPの文章だけお願いできますか？</span>
               <span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer">
+            <div class="faq-answer" id="faq-answer-3" role="region" aria-labelledby="faq-question-3">
               <p>可能です。LP構成・コピーライティングのみのご依頼にも対応しています。</p>
             </div>
           </div>
 
           <div class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-4" id="faq-question-4">
               <span><span class="faq-q-label">Q.</span>修正はできますか？</span>
               <span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer">
+            <div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-question-4">
               <p>各プランに応じた回数まで修正対応します。大幅な方向転換の場合は別途ご相談となる場合があります。</p>
             </div>
           </div>
 
           <div class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-5" id="faq-question-5">
               <span><span class="faq-q-label">Q.</span>継続依頼はできますか？</span>
               <span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer">
+            <div class="faq-answer" id="faq-answer-5" role="region" aria-labelledby="faq-question-5">
               <p>可能です。SEO記事の継続制作などもご相談ください。</p>
             </div>
           </div>
@@ -440,13 +519,14 @@
       </div>
     </section>
 
-    <!-- FINAL CTA -->
-    <section class="final-cta-wrap">
+    <!-- CONTACT CTA -->
+    <section class="final-cta-wrap" id="contact-cta">
       <div class="container">
         <div class="final-cta reveal">
-          <h2 class="section-title">Web制作・記事制作について<br>お気軽にご相談ください。</h2>
-          <p>SEO記事、LPライティング、LP制作など、ご希望の内容を確認したうえでご提案いたします。<br>「まだ依頼内容が明確に決まっていない」という段階でも問題ありません。</p>
-          <a href="contact.html" class="button button-white">制作について相談する</a>
+          <span class="section-eyebrow">Contact</span>
+          <h2 class="section-title">お気軽に<br class="mobile-break">ご相談ください</h2>
+          <p>SEO記事・LPライティング・LP制作のご相談を受け付けています。</p>
+          <a href="contact.html" class="button button-white">お問い合わせはこちら</a>
         </div>
       </div>
     </section>
@@ -456,11 +536,14 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <p class="site-name">Ryunosuke Sato</p>
+        <div class="footer-brand">
+          <p class="site-name">Ryunosuke Sato</p>
+          <p class="footer-tagline">WEB CONTENT PORTFOLIO</p>
+        </div>
         <nav class="footer-nav">
           <ul>
             <li><a href="#service">Service</a></li>
-            <li><a href="#works">Works</a></li>
+            <li><a href="#featured-works">Works</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="contact.html">Contact</a></li>
           </ul>
