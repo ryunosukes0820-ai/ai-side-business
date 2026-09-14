@@ -203,10 +203,14 @@ def run_checks(article_id):
         text = pf.read_text(encoding="utf-8")
         body = compute_body(text)
         count = len(body)
-        if 2800 <= count <= 3200:
-            ok(f"本文文字数: {count}字(2,800〜3,200字の範囲内)")
+        if int(article_id) >= 44:
+            low, high = 4500, 5500
         else:
-            fail(f"本文文字数: {count}字(2,800〜3,200字の範囲外)")
+            low, high = 2800, 3200
+        if low <= count <= high:
+            ok(f"本文文字数: {count}字({low:,}〜{high:,}字の範囲内)")
+        else:
+            fail(f"本文文字数: {count}字({low:,}〜{high:,}字の範囲外)")
 
         if "<!--" in text or "-->" in text:
             fail("HTML/Markdownコメントが混入しています")
